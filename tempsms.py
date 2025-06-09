@@ -1,6 +1,4 @@
-‎#!/usr/bin/env python3
-‎# -*- coding: utf-8 -*-
-‎
+
 ‎"""
 ‎Temp SMS Receiver
 ‎By Nafi Gamer DC-nafigamer
