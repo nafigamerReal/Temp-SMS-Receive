@@ -202,7 +202,7 @@
 ‎                        )
 ‎                        return True, None
 ‎                    except subprocess.CalledProcessError:
-‎                        return False, 'Install termux-api: "pkg install termux-api"'
+‎                        return False, 'Install termux-api: pkg install termux-api'
 ‎                    except subprocess.TimeoutExpired:
 ‎                        return False, 'Install Termux-API app from Play Store'
 ‎                    except FileNotFoundError:
@@ -289,7 +289,7 @@
 ‎    try:
 ‎        async with ClientSession() as session:
 ‎            async with session.get(
-‎                "https://raw.githubusercontent.com/nafiop122/Temp-SMS-Receive/refs/heads/main/.version"
+‎                "https://raw.githubusercontent.com/nafigamerReal/Temp-SMS-Receive/refs/heads/main/.version"
 ‎            ) as response:
 ‎                response.raise_for_status()
 ‎                latest = (await response.text()).strip()
