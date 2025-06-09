@@ -1,11 +1,9 @@
 ‎#!/usr/bin/env python
 # coding: utf-8
-‎
 ‎"""
 ‎Temp SMS Receiver
 ‎By Nafi Gamer DC-nafigamer
 ‎"""
-‎
 ‎import os
 ‎import sys
 ‎import asyncio
