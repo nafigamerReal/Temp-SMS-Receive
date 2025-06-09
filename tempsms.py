@@ -1,8 +1,17 @@
-import os
+‎#!/usr/bin/env python3
+‎# -*- coding: utf-8 -*-
+‎
+‎"""
+‎Temp SMS Receiver
+‎By Nafi Gamer DC-nafigamer
+‎"""
+‎
+‎import os
+‎import sys
 ‎import asyncio
 ‎import random
 ‎import base64
-‎import subprocess 
+‎import subprocess  # Added missing import
 ‎from typing import Dict, List, Tuple, Optional, Any
 ‎from dataclasses import dataclass
 ‎from enum import Enum, auto
@@ -280,7 +289,7 @@ import os
 ‎    try:
 ‎        async with ClientSession() as session:
 ‎            async with session.get(
-‎                "https://raw.githubusercontent.com/nafigamerReal/Temp-SMS-Receive/refs/heads/main/.version"
+‎                "https://raw.githubusercontent.com/nafiop122/Temp-SMS-Receive/refs/heads/main/.version"
 ‎            ) as response:
 ‎                response.raise_for_status()
 ‎                latest = (await response.text()).strip()
