@@ -1,10 +1,4 @@
-
-‎"""
-‎Temp SMS Receiver
-‎By Nafi Gamer DC-nafigamer
-‎"""
-‎
-‎import os
+import os
 ‎import sys
 ‎import asyncio
 ‎import random
