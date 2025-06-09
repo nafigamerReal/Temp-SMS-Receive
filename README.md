@@ -48,7 +48,12 @@ A Python script to fetch temporary SMS numbers and display received messages.
     git clone https://github.com/nafiop122/Temp-SMS-Receive.git
     cd Temp-SMS-Receive
     ```
+    
+3. Install dependencies:
 
+    ```bash
+    pip install -r requirements.txt
+    ```
 ## 🚀 Usage
 
 1. Run the script:
