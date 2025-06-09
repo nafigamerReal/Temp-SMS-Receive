@@ -18,18 +18,31 @@ A Python script to fetch temporary SMS numbers and display received messages.
 
 ## 📥 Installation
 
-1. Clone the repository:
+1. Install Git:
+    ```bash
+    apt install git
+    ```
+   
+2. Clone the repository:
 
     ```bash
     git clone https://github.com/Sl-Sanda-Ru/Temp-SMS-Receive.git
     cd Temp-SMS-Receive
     ```
 
-2. Install dependencies:
+3. Install dependencies:
 
     ```bash
     pip install -r requirements.txt
     ```
+
+## 📥 Installation For Termux
+
+1. Install Git & Termux API:
+   ```bash
+   pkg install git && pkg install termux-api
+   ```
+
 
 ## 🚀 Usage
 
