@@ -1,0 +1,6 @@
+aiohttp
+pycryptodome
+colorama
+pyfiglet
+pyperclip
+rich
