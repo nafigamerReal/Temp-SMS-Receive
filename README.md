@@ -26,7 +26,7 @@ A Python script to fetch temporary SMS numbers and display received messages.
 2. Clone the repository:
 
     ```bash
-    git clone https://github.com/nafiop122/Temp-SMS-Receive.git
+    git clone https://github.com/nafigamerReal/Temp-SMS-Receive.git
     cd Temp-SMS-Receive
     ```
 
@@ -45,7 +45,7 @@ A Python script to fetch temporary SMS numbers and display received messages.
 2. Clone the repository:
 
     ```bash
-    git clone https://github.com/nafiop122/Temp-SMS-Receive.git
+    git clone https://github.com/nafigamerReal/Temp-SMS-Receive.git
     cd Temp-SMS-Receive
     ```
     
