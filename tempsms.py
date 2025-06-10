@@ -559,6 +559,8 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         os.system('cls' if os.name == 'nt' else 'clear')
+        subprocess.run([sys.executable, "tempsms.py"])
     except Exception as e:
         print_warning(f"Unexpected error: {str(e)}")
         os.system('cls' if os.name == 'nt' else 'clear')
+        subprocess.run([sys.executable, "tempsms.py"])
