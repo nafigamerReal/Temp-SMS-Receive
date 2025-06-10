@@ -1,338 +1,564 @@
 #!/usr/bin/env python
 # coding: utf-8
-# By Nafi Gamer
-
+"""
+Temp SMS Receiver
+By Nafi Gamer DC-nafigamer
+"""
 import os
-import subprocess
-import random
-import time
 import sys
+import asyncio
+import random
 import base64
-
-
-def warn(message: str) -> None:
-    print(f"\x1b[1m\x1b[31m[!] {message}".center(os.get_terminal_size().columns))
-
-
-def info(message: str) -> None:
-    print(f"\x1b[1m\x1b[92m[+] {message}".center(os.get_terminal_size().columns))
-
+import subprocess
+from typing import Dict, List, Tuple, Optional, Any
+from dataclasses import dataclass
+from enum import Enum, auto
+from pathlib import Path
 
 try:
+    import requests
     from Crypto.Cipher import AES
     from Crypto.Util.Padding import unpad
-    import requests
     import colorama
     import pyfiglet
     import pyperclip
-except ModuleNotFoundError:
-    try:
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]
-        )
-    except subprocess.CalledProcessError:
-        warn("Something Error Occured While Installing Dependencies")
-        warn("Maybe PIP isn't Installed or requirements.txt File Not Available?")
-        exit()
-    else:
-        info("Dependencies Installed")
-        info("Run the Program Again")
-        exit()
-BLU = colorama.Style.BRIGHT + colorama.Fore.BLUE
-CYA = colorama.Style.BRIGHT + colorama.Fore.CYAN
-GRE = colorama.Style.BRIGHT + colorama.Fore.GREEN
-YEL = colorama.Style.BRIGHT + colorama.Fore.YELLOW
-RED = colorama.Style.BRIGHT + colorama.Fore.RED
-MAG = colorama.Style.BRIGHT + colorama.Fore.MAGENTA
-LIYEL = colorama.Style.BRIGHT + colorama.Fore.LIGHTYELLOW_EX
-LIRED = colorama.Style.BRIGHT + colorama.Fore.LIGHTRED_EX
-LIMAG = colorama.Style.BRIGHT + colorama.Fore.LIGHTMAGENTA_EX
-LIBLU = colorama.Style.BRIGHT + colorama.Fore.LIGHTBLUE_EX
-LICYA = colorama.Style.BRIGHT + colorama.Fore.LIGHTCYAN_EX
-LIGRE = colorama.Style.BRIGHT + colorama.Fore.LIGHTGREEN_EX
-BOLD = colorama.Style.BRIGHT
-CLEAR = "cls" if os.name == "nt" else "clear"
-COLORS = BLU, CYA, GRE, YEL, RED, MAG, LIYEL, LIRED, LIMAG, LIBLU, LICYA, LIGRE
-FONTS = (
-    "basic",
-    "o8",
-    "cosmic",
-    "graffiti",
-    "chunky",
-    "epic",
-    "doom",
-    "avatar",
-)  #'poison'
-HEADERS = {"accept-encoding": "gzip", "user-agent": "okhttp/4.9.2"}
-global font
-font = random.choice(FONTS)
+    from aiohttp import ClientSession
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.progress import Progress
+    from rich.table import Table
+    from rich.style import Style
+except ImportError as e:
+    print(f"Missing dependencies: {e}")
+    if input("Install dependencies? (y/n): ").lower() == 'y':
+        try:
+            subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], check=True)
+            print("Dependencies installed successfully. Please run the program again.")
+        except subprocess.CalledProcessError:
+            print("Failed to install dependencies. Please install them manually.")
+    sys.exit(1)
+
 colorama.init(autoreset=True)
 
+CLEAR = "cls" if os.name == "nt" else "clear"
+BASE_URL = "https://api-1.online"
+AES_KEY = "9e8986a75ffa32aa187b7f34394c70ea".encode()
+HEADERS = {
+    "accept-encoding": "gzip",
+    "user-agent": "okhttp/4.9.2"
+}
 
-def logo() -> None:
+console = Console()
+
+class Color:
+    BLUE = Style(color="blue", bold=True)
+    CYAN = Style(color="cyan", bold=True)
+    GREEN = Style(color="green", bold=True)
+    YELLOW = Style(color="yellow", bold=True)
+    RED = Style(color="red", bold=True)
+    MAGENTA = Style(color="magenta", bold=True)
+    LIGHT_YELLOW = Style(color="yellow3", bold=True)
+    LIGHT_RED = Style(color="red3", bold=True)
+    LIGHT_MAGENTA = Style(color="magenta3", bold=True)
+    LIGHT_BLUE = Style(color="blue3", bold=True)
+    LIGHT_CYAN = Style(color="cyan3", bold=True)
+    LIGHT_GREEN = Style(color="green3", bold=True)
+    BOLD = Style(bold=True)
+
+    @classmethod
+    def random(cls) -> Style:
+        colors = [
+            cls.BLUE, cls.CYAN, cls.GREEN, cls.YELLOW, cls.RED, cls.MAGENTA,
+            cls.LIGHT_YELLOW, cls.LIGHT_RED, cls.LIGHT_MAGENTA,
+            cls.LIGHT_BLUE, cls.LIGHT_CYAN, cls.LIGHT_GREEN
+        ]
+        return random.choice(colors)
+
+FONTS = (
+    "basic", "o8", "cosmic", "graffiti", "chunky", 
+    "epic", "doom", "avatar"
+)
+
+@dataclass
+class Country:
+    code: str
+    name: str
+
+@dataclass
+class PhoneNumber:
+    e164: str
+    time: str
+    country: str
+
+@dataclass
+class SMSMessage:
+    from_number: str
+    body: str
+    time: str
+
+class ClipboardResult(Enum):
+    SUCCESS = auto()
+    TERMUX_API_NOT_INSTALLED = auto()
+    TERMUX_APP_NOT_INSTALLED = auto()
+    UNKNOWN_ENVIRONMENT = auto()
+
+def clear_screen() -> None:
+    """Clear the terminal screen."""
     os.system(CLEAR)
-    color1 = random.choice(COLORS)
-    color2 = random.choice(COLORS)
+
+def print_centered(text: str, color: Style = Color.BOLD) -> None:
+    """Print centered text with optional color."""
+    console.print(text.center(os.get_terminal_size().columns), style=color)
+
+def print_warning(message: str) -> None:
+    """Print a warning message."""
+    print_centered(f"[!] {message}", Color.RED)
+
+def print_success(message: str) -> None:
+    """Print a success message."""
+    print_centered(f"[+] {message}", Color.GREEN)
+
+def print_info(message: str) -> None:
+    """Print an informational message."""
+    print_centered(f"[*] {message}", Color.BLUE)
+
+def show_logo() -> None:
+    """Display the program logo."""
+    clear_screen()
+    color1 = Color.random()
+    color2 = Color.random()
     while color1 == color2:
-        color2 = random.choice(COLORS)
-    print(color1 + "_" * os.get_terminal_size().columns, end="\n" * 2)
-    print(
-        color2
-        + pyfiglet.figlet_format(
-            "Temp\nSMS",
-            font=font,
-            justify="center",
-            width=os.get_terminal_size().columns,
-        ),
-        end="",
+        color2 = Color.random()
+
+    logo_text = pyfiglet.figlet_format(
+        "Temp\nSMS",
+        font=random.choice(FONTS),
+        justify="center",
+        width=os.get_terminal_size().columns,
     )
-    msg = "[+] By Nafi Gamer"
-    _ = int(os.get_terminal_size().columns / 2)
-    _ -= int(len(msg) / 2)
-    print(color1 + "_" * _ + LIYEL + msg + color1 + "_" * _ + "\n")
+    
+    panel = Panel(
+        logo_text,
+        title="[bold]Temporary SMS Receiver",
+        subtitle="By Nafi Gamer",
+        border_style=color1,
+        title_align="center",
+        width=os.get_terminal_size().columns - 4
+    )
+    
+    console.print(panel)
 
-
-def fetch_authkey() -> str:
-    url = "https://api-1.online/post/"
+async def fetch_auth_key(session: ClientSession) -> str:
+    """Fetch the encrypted API key."""
+    url = f"{BASE_URL}/post/"
     params = {"action": "get_encrypted_api_key", "type": "user"}
-    json = {"api": "111"}
-    rq = requests.post(url, params=params, headers=HEADERS, json=json)
-    return rq.json()["api_key"]
-
+    json_data = {"api": "111"}
+    
+    async with session.post(url, params=params, headers=HEADERS, json=json_data) as response:
+        response.raise_for_status()
+        data = await response.json()
+        return data["api_key"]
 
 def decrypt_key(encrypted_str: str) -> str:
-    decode = base64.b64decode(encrypted_str)  # Decode the Base64
-    # Split the decoded data into IV and the actual encrypted data
-    iv = decode[:16]
-    encrypted_data = decode[16:]
-    cipher = AES.new(
-        "9e8986a75ffa32aa187b7f34394c70ea".encode(), AES.MODE_CBC, iv
-    )  # AES cipher with CBC mode and the provided key and IV
-    decrypted_data = unpad(
-        cipher.decrypt(encrypted_data), AES.block_size
-    )  # Decryption and unpad the result
+    """Decrypt the API key using AES."""
+    decoded = base64.b64decode(encrypted_str)
+    iv = decoded[:16]
+    encrypted_data = decoded[16:]
+    
+    cipher = AES.new(AES_KEY, AES.MODE_CBC, iv)
+    decrypted_data = unpad(cipher.decrypt(encrypted_data), AES.block_size)
     return decrypted_data.decode()
 
+async def get_auth_key() -> str:
+    """Get the decrypted auth key."""
+    async with ClientSession() as session:
+        encrypted_key = await fetch_auth_key(session)
+        return decrypt_key(encrypted_key)
 
-AUTH_KEY = decrypt_key(fetch_authkey())
-
-
-def copy_clipboard(text: str) -> tuple:
-    """Error codes
-    1: termux api from apt not installed
-    2: termux api app not installed
-    3: not termux"""
+async def copy_to_clipboard(text: str) -> Tuple[bool, Optional[str]]:
+    """Copy text to clipboard with fallback methods."""
     try:
         pyperclip.copy(text)
+        return True, None
     except Exception:
-        try:
-            if subprocess.check_output(["uname", "-o"]).strip() == b"Android":
-                try:
-                    if (
-                        subprocess.call(
+        if sys.platform == "linux":
+            try:
+                if b"Android" in subprocess.check_output(["uname", "-o"]):
+                    try:
+                        result = subprocess.run(
                             ["termux-clipboard-set", text],
                             stderr=subprocess.DEVNULL,
                             stdout=subprocess.DEVNULL,
                             timeout=4,
+                            check=True
                         )
-                        == 0
-                    ):
                         return True, None
-                except FileNotFoundError:
-                    return (
-                        False,
-                        'Copying To Clipboard Failed! Install termux-API Package "apt install termux-api"',
-                    )
-                except subprocess.TimeoutExpired:
-                    return (
-                        False,
-                        'Copying To Clipboard Failed! Install termux-API App "https://www.mediafire.com/file/vlgkmdqodyoxla6/Termux.API.ver.0.49.build.49.apk/file"',
-                    )
-        except FileNotFoundError:
-            return (
-                False,
-                "Copying To Clipboard Failed! You Are In A Unknown Environment",
-            )
-    else:
-        return True, None
+                    except subprocess.CalledProcessError:
+                        return False, 'Install termux-api: pkg install termux-api'
+                    except subprocess.TimeoutExpired:
+                        return False, 'Install Termux-API app from Play Store'
+                    except FileNotFoundError:
+                        return False, "Termux clipboard utility not found"
+            except subprocess.CalledProcessError:
+                pass
+        
+        for cmd in ["xclip", "xsel"]:
+            try:
+                subprocess.run(
+                    [cmd, "-i"],
+                    input=text.encode(),
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL
+                )
+                return True, None
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                continue
+        
+        return False, "Clipboard access not available"
 
-
-def fetch_countries() -> dict:
-    url = "https://api-1.online/get/"
+async def fetch_countries(session: ClientSession) -> List[Country]:
+    """Fetch available countries."""
+    url = f"{BASE_URL}/get/"
     params = {"action": "country"}
-    return requests.post(url, params=params, headers=HEADERS).json()["records"]
+    
+    async with session.post(url, params=params, headers=HEADERS) as response:
+        response.raise_for_status()
+        data = await response.json()
+        return [Country(code=item["country_code"], name=item["Country_Name"]) 
+                for item in data["records"]]
 
-
-def fetch_numbers(country: str, page: int) -> dict:
-    url = "https://api-1.online/post/"
+async def fetch_numbers(session: ClientSession, country: str, page: int, auth_key: str) -> Dict[str, Any]:
+    """Fetch available numbers for a country."""
+    url = f"{BASE_URL}/post/"
     params = {"action": "GetFreeNumbers", "type": "user"}
     headers = HEADERS.copy()
-    headers["authorization"] = "Bearer " + AUTH_KEY
-    json = {"country_name": country, "limit": 10, "page": page}
-    return requests.post(url, params=params, headers=headers, json=json).json()
+    headers["authorization"] = f"Bearer {auth_key}"
+    json_data = {"country_name": country, "limit": 10, "page": page}
+    
+    async with session.post(url, params=params, headers=headers, json=json_data) as response:
+        response.raise_for_status()
+        return await response.json()
 
+async def fetch_sms(session: ClientSession, number: str, auth_key: str) -> List[SMSMessage]:
+    """Fetch SMS messages for a number."""
+    url = f"{BASE_URL}/post/getFreeMessages"
+    headers = HEADERS.copy()
+    headers["authorization"] = f"Bearer {auth_key}"
+    json_data = {"no": number, "page": "1"}
+    
+    async with session.post(url, headers=headers, json=json_data) as response:
+        response.raise_for_status()
+        data = await response.json()
+        return [SMSMessage(
+            from_number=msg["FromNumber"],
+            body=msg["Messagebody"],
+            time=msg["message_time"]
+        ) for msg in data["messages"]]
 
-def fetch_sms(number: str) -> dict:
-    url = "https://api-1.online/post/getFreeMessages"
-    json = {"no": number, "page": "1"}
-    headers = headers = HEADERS.copy()
-    headers["authorization"] = "Bearer " + AUTH_KEY
-    return requests.post(url, headers=headers, json=json).json()["messages"]
+async def display_sms(number: str, auth_key: str) -> None:
+    """Display SMS messages for a number."""
+    async with ClientSession() as session:
+        messages = await fetch_sms(session, number, auth_key)
+        
+        if not messages:
+            print_warning("No messages found")
+            return
+        
+        table = Table(title=f"SMS Messages for {number}", show_header=True, header_style="bold magenta")
+        table.add_column("From", style="cyan")
+        table.add_column("Message", style="green")
+        table.add_column("Time", style="yellow")
+        
+        for msg in messages:
+            table.add_row(msg.from_number, repr(msg.body), msg.time)
+        
+        console.print(table)
 
-
-def print_sms(number: str) -> None:
-    sms_list = fetch_sms(number)
-    for i in sms_list:
-        print(
-            "{}{} {} {}".format(
-                random.choice(COLORS),
-                i["FromNumber"],
-                repr(i["Messagebody"]),
-                i["message_time"],
-            )
-        )
-        print("_" * os.get_terminal_size().columns)
-
-
-def check_update() -> tuple:
-    latest = requests.get(
-        "https://raw.githubusercontent.com/nafigamerReal/Temp-SMS-Receive/refs/heads/main/.version"
-    ).text.strip()
-    with open(".version") as version:
-        if version.read().strip() != latest:
-            return True, latest
-        else:
-            return False, "0"
-
-
-def update():
-    if ".git" in os.listdir():
-        _ = subprocess.run(
-            ["git", "stash"],
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        _ = subprocess.run(
-            ["git", "pull"],
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-
-
-def main():
+async def check_update() -> Tuple[bool, str]:
+    """Check for updates."""
     try:
-        logo()
-        tmp_countries = fetch_countries()
-        for iteration, i in enumerate(tmp_countries, start=1):
-            print(
-                f'{random.choice(COLORS)}{iteration}. {i["country_code"]} {i["Country_Name"]}'.center(
-                    os.get_terminal_size().columns
-                )
-            )
-        while True:
-            try:
-                choice = int(input(BOLD + "\tEnter Required Country No: "))
-                if choice <= 0 or choice > len(tmp_countries):
-                    warn("Wrong Input")
-                else:
-                    break
-            except ValueError:
-                warn("Wrong Input")
-            except KeyboardInterrupt:
-                exit(0)
-        page = fetch_numbers(tmp_countries[choice - 1]["Country_Name"], 1)
-        list_numbers = page["Available_numbers"]
-        if page["Total_Pages"] == 0:
-            warn("No numbers available")
-            time.sleep(1.2)
-            main()
-        for i in range(2, page["Total_Pages"] + 1):
-            list_numbers.extend(
-                fetch_numbers(
-                    tmp_countries[choice - 1]["Country_Name"],
-                    i,
-                )["Available_numbers"]
-            )
-            if len(list_numbers) > 149:
-                break
-        for iteration, i in enumerate(list_numbers, start=1):
-            print(
-                "{}{}. {} {}".format(
-                    random.choice(COLORS), iteration, i["E.164"], i["time"]
-                ).center(os.get_terminal_size().columns)
-            )
-        while True:
-            try:
-                choice = input(BOLD + 'Enter Required Number "R" For Random: ')
-                if int(choice) <= 0 or int(choice) > len(list_numbers):
-                    warn("Wrong Input")
-                else:
-                    break
-            except ValueError:
-                if choice.isalpha() and choice.upper() == "R":
-                    break
-                else:
-                    warn("Wrong Input")
-        if choice.upper() == "R":
-            per = int(len(list_numbers) * 20 / 100)
-            weight = [2 for i in range(per)] + [
-                1 for i in range(len(list_numbers) - per)
-            ]
-            rnd = random.choices(list_numbers, weights=weight, k=1)[0]["E.164"]
-        while True:
-            try:
-                print(
-                    f"{random.choice(COLORS)}Selected Number: {rnd}".center(
-                        os.get_terminal_size().columns
-                    )
-                )
-                _ = copy_clipboard(rnd)
-                if not _[0] == True:
-                    print(RED + _[1].center(os.get_terminal_size().columns))
-                else:
-                    print(
-                        GRE
-                        + "Number Copied To The Clipboard".center(
-                            os.get_terminal_size().columns
-                        )
-                    )
-                print_sms(rnd)
-            except NameError:
-                print(
-                    f'{random.choice(COLORS)}Selected Number: {list_numbers[int(choice)-1]["E.164"]}'.center(
-                        os.get_terminal_size().columns
-                    )
-                )
-                _ = copy_clipboard(list_numbers[int(choice) - 1]["E.164"])
-                if not _[0] == True:
-                    print(RED + _[1].center(os.get_terminal_size().columns))
-                else:
-                    print(
-                        GRE
-                        + "Number Copied To The Clipboard".center(
-                            os.get_terminal_size().columns
-                        )
-                    )
-                print_sms(list_numbers[int(choice) - 1]["E.164"])
-            print(
-                BOLD + "Press <Enter> To Refresh".center(os.get_terminal_size().columns)
-            )
-            input(
-                BOLD + "Or Ctrl+c To Main Menu".center(os.get_terminal_size().columns)
-            )
-            logo()
-    except KeyboardInterrupt:
-        main()
+        async with ClientSession() as session:
+            async with session.get(
+                "https://raw.githubusercontent.com/nafigamerReal/Temp-SMS-Receive/refs/heads/main/.version"
+            ) as response:
+                response.raise_for_status()
+                latest = (await response.text()).strip()
+                
+                version_file = Path(".version")
+                if version_file.exists():
+                    current = version_file.read_text().strip()
+                    return (current != latest, latest)
+                return (True, latest)
+    except Exception:
+        return (False, "0")
 
+async def perform_update() -> bool:
+    """Perform program update."""
+    if ".git" not in os.listdir():
+        return False
+    
+    try:
+        subprocess.run(
+            ["git", "stash"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    
+        subprocess.run(
+            ["git", "pull"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+async def select_country(countries: List[Country]) -> Country:
+    """Prompt user to select a country."""
+    while True:
+        try:
+            table = Table(title="Available Countries", show_header=True, header_style="bold blue")
+            table.add_column("No.", style="cyan")
+            table.add_column("Code", style="green")
+            table.add_column("Country", style="yellow")
+            
+            for idx, country in enumerate(countries, 1):
+                table.add_row(str(idx), country.code, country.name)
+            
+            console.print(table)
+            
+            choice = await asyncio.to_thread(
+                input, 
+                f"Enter country number (1-{len(countries)}): "
+            )
+            
+            if not choice.isdigit():
+                print_warning("Please enter a number")
+                continue
+                
+            choice_idx = int(choice) - 1
+            if 0 <= choice_idx < len(countries):
+                return countries[choice_idx]
+            
+            print_warning("Invalid selection")
+        except KeyboardInterrupt:
+            print_info("Returning to main menu...")
+            raise
+
+async def select_number(numbers: List[PhoneNumber]) -> str:
+    """Prompt user to select a phone number."""
+    while True:
+        try:
+            table = Table(title="Available Numbers", show_header=True, header_style="bold green")
+            table.add_column("No.", style="cyan")
+            table.add_column("Number", style="green")
+            table.add_column("Time", style="yellow")
+            
+            for idx, num in enumerate(numbers, 1):
+                table.add_row(str(idx), num.e164, num.time)
+            
+            console.print(table)
+            
+            choice = await asyncio.to_thread(
+                input, 
+                f"Enter number (1-{len(numbers)}) or 'R' for random: "
+            )
+            
+            if choice.upper() == "R":
+                recent_count = max(1, int(len(numbers) * 0.2))
+                weights = [2] * recent_count + [1] * (len(numbers) - recent_count)
+                return random.choices(numbers, weights=weights, k=1)[0].e164
+            
+            if not choice.isdigit():
+                print_warning("Please enter a number or 'R'")
+                continue
+                
+            choice_idx = int(choice) - 1
+            if 0 <= choice_idx < len(numbers):
+                return numbers[choice_idx].e164
+            
+            print_warning("Invalid selection")
+        except KeyboardInterrupt:
+            print_info("Returning to country selection...")
+            raise
+
+async def main_flow(auth_key: str) -> None:
+    """Main program flow."""
+    while True:
+        try:
+            show_logo()
+            
+            async with ClientSession() as session:
+                try:
+                    with Progress() as progress:
+                        task = progress.add_task("[cyan]Loading countries...", total=1)
+                        countries = await fetch_countries(session)
+                        progress.update(task, advance=1)
+                except Exception as e:
+                    print_warning(f"Failed to fetch countries: {str(e)}")
+                    await asyncio.sleep(3)
+                    continue
+                
+                if not countries:
+                    print_warning("No countries available")
+                    await asyncio.sleep(2)
+                    continue
+                    
+                try:
+                    selected_country = await select_country(countries)
+                    
+                    try:
+                        with Progress() as progress:
+                            task = progress.add_task(
+                                f"[green]Loading numbers for {selected_country.name}...",
+                                total=1
+                            )
+                            
+                            first_page = await fetch_numbers(
+                                session, selected_country.name, 1, auth_key
+                            )
+                            progress.update(task, advance=0.3)
+                            
+                            if first_page.get("Total_Pages", 0) == 0:
+                                progress.update(task, advance=1)
+                                print_warning("No numbers available for this country")
+                                await asyncio.sleep(2)
+                                continue
+                                
+                            numbers = [
+                                PhoneNumber(
+                                    e164=num["E.164"],
+                                    time=num["time"],
+                                    country=selected_country.name
+                                )
+                                for num in first_page.get("Available_numbers", [])
+                            ]
+                            progress.update(task, advance=0.3)
+                            
+                            if first_page.get("Total_Pages", 1) > 1 and len(numbers) < 150:
+                                remaining_pages = min(15, first_page["Total_Pages"] - 1)
+                                for page_num in range(2, 2 + remaining_pages):
+                                    try:
+                                        page_data = await fetch_numbers(
+                                            session, selected_country.name, page_num, auth_key
+                                        )
+                                        numbers.extend([
+                                            PhoneNumber(
+                                                e164=num["E.164"],
+                                                time=num["time"],
+                                                country=selected_country.name
+                                            )
+                                            for num in page_data.get("Available_numbers", [])
+                                        ])
+                                        progress.update(task, advance=0.4/remaining_pages)
+                                        
+                                        if len(numbers) >= 150:
+                                            break
+                                    except Exception as e:
+                                        print_warning(f"Error fetching page {page_num}: {str(e)}")
+                                        continue
+                            
+                            progress.update(task, completed=1)
+                            
+                    except Exception as e:
+                        print_warning(f"Error fetching numbers: {str(e)}")
+                        await asyncio.sleep(3)
+                        continue
+                        
+                    selected_number = await select_number(numbers)
+                    
+                    success, message = await copy_to_clipboard(selected_number)
+                    if success:
+                        print_success("Number copied to clipboard!")
+                    else:
+                        print_warning(f"Clipboard error: {message}")
+                    
+                    while True:
+                        try:
+                            await display_sms(selected_number, auth_key)
+                            
+                            print_centered(
+                                "Press Enter to refresh or Ctrl+C to return to main menu",
+                                Color.LIGHT_CYAN
+                            )
+                            
+                            try:
+                                await asyncio.to_thread(input)
+                            except KeyboardInterrupt:
+                                break
+                                
+                        except KeyboardInterrupt:
+                            break
+                        except Exception as e:
+                            print_warning(f"Error fetching messages: {str(e)}")
+                            await asyncio.sleep(2)
+                            break
+                            
+                except KeyboardInterrupt:
+                    print_info("\nReturning to main menu...")
+                    await asyncio.sleep(1)
+                    continue
+                    
+        except KeyboardInterrupt:
+            print_info("\nExiting...")
+            return False
+        except Exception as e:
+            print_warning(f"An error occurred: {str(e)}")
+            await asyncio.sleep(3)
+            return True
+
+async def main() -> None:
+    """Entry point."""
+    max_retries = 5
+    retry_count = 0
+    
+    while retry_count < max_retries:
+        try:
+            update_available, latest_version = await check_update()
+            if update_available:
+                print_warning(f"Update available (version {latest_version})")
+                print_info("Updating...")
+                
+                if await perform_update():
+                    print_success("Update successful! Please restart the program.")
+                else:
+                    print_warning("Update failed - please update manually")
+                
+                return
+            
+            with console.status("[bold green]Authenticating..."):
+                auth_key = await get_auth_key()
+            
+            should_restart = await main_flow(auth_key)
+            if not should_restart:
+                break
+                
+            retry_count += 1
+            if retry_count < max_retries:
+                print_info(f"Restarting... (attempt {retry_count}/{max_retries})")
+                await asyncio.sleep(1)
+        
+        except KeyboardInterrupt:
+            print_info("\nExiting...")
+            break
+        except Exception as e:
+            print_warning(f"Fatal error: {str(e)}")
+            retry_count += 1
+            if retry_count < max_retries:
+                print_info(f"Restarting... (attempt {retry_count}/{max_retries})")
+                await asyncio.sleep(1)
+            if input("Show traceback? (y/n): ").lower() == 'y':
+                import traceback
+                traceback.print_exc()
 
 if __name__ == "__main__":
-    if check_update()[0]:
-        warn("Update Available")
-        info("Updating...")
-        update()
-        info("Successfully Updated")
-        info("Run the Program Again")
-        exit()
-    main()
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        os.system('cls' if os.name == 'nt' else 'clear')
+    except Exception as e:
+        print_warning(f"Unexpected error: {str(e)}")
+        os.system('cls' if os.name == 'nt' else 'clear')
