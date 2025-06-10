@@ -38,10 +38,8 @@ except ImportError as e:
             print("Failed to install dependencies. Please install them manually.")
     sys.exit(1)
 
-# Initialize colorama
 colorama.init(autoreset=True)
 
-# Constants
 CLEAR = "cls" if os.name == "nt" else "clear"
 BASE_URL = "https://api-1.online"
 AES_KEY = "9e8986a75ffa32aa187b7f34394c70ea".encode()
@@ -50,10 +48,8 @@ HEADERS = {
     "user-agent": "okhttp/4.9.2"
 }
 
-# Rich console setup
 console = Console()
 
-# Color definitions using rich Styles
 class Color:
     BLUE = Style(color="blue", bold=True)
     CYAN = Style(color="cyan", bold=True)
@@ -134,8 +130,7 @@ def show_logo() -> None:
     color2 = Color.random()
     while color1 == color2:
         color2 = Color.random()
-    
-    # Create a rich panel for the logo
+
     logo_text = pyfiglet.figlet_format(
         "Temp\nSMS",
         font=random.choice(FONTS),
@@ -208,7 +203,6 @@ async def copy_to_clipboard(text: str) -> Tuple[bool, Optional[str]]:
             except subprocess.CalledProcessError:
                 pass
         
-        # Try xclip/xsel as fallback for Linux
         for cmd in ["xclip", "xsel"]:
             try:
                 subprocess.run(
@@ -306,15 +300,13 @@ async def perform_update() -> bool:
         return False
     
     try:
-        # Stash any local changes
         subprocess.run(
             ["git", "stash"],
             check=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
-        
-        # Pull latest changes
+    
         subprocess.run(
             ["git", "pull"],
             check=True,
@@ -329,7 +321,6 @@ async def select_country(countries: List[Country]) -> Country:
     """Prompt user to select a country."""
     while True:
         try:
-            # Display countries in a table
             table = Table(title="Available Countries", show_header=True, header_style="bold blue")
             table.add_column("No.", style="cyan")
             table.add_column("Code", style="green")
@@ -362,7 +353,6 @@ async def select_number(numbers: List[PhoneNumber]) -> str:
     """Prompt user to select a phone number."""
     while True:
         try:
-            # Display numbers in a table
             table = Table(title="Available Numbers", show_header=True, header_style="bold green")
             table.add_column("No.", style="cyan")
             table.add_column("Number", style="green")
@@ -379,7 +369,6 @@ async def select_number(numbers: List[PhoneNumber]) -> str:
             )
             
             if choice.upper() == "R":
-                # Weight recent numbers higher (20% of numbers get double weight)
                 recent_count = max(1, int(len(numbers) * 0.2))
                 weights = [2] * recent_count + [1] * (len(numbers) - recent_count)
                 return random.choices(numbers, weights=weights, k=1)[0].e164
@@ -404,7 +393,6 @@ async def main_flow(auth_key: str) -> None:
             show_logo()
             
             async with ClientSession() as session:
-                # Fetch countries with progress indicator
                 with Progress() as progress:
                     task = progress.add_task("[cyan]Loading countries...", total=1)
                     countries = await fetch_countries(session)
@@ -414,11 +402,7 @@ async def main_flow(auth_key: str) -> None:
                     print_warning("No countries available")
                     await asyncio.sleep(2)
                     continue
-                
-                # Select country
                 selected_country = await select_country(countries)
-                
-                # Fetch numbers with progress
                 with Progress() as progress:
                     task = progress.add_task(
                         f"[green]Loading numbers for {selected_country.name}...",
@@ -435,8 +419,6 @@ async def main_flow(auth_key: str) -> None:
                         print_warning("No numbers available for this country")
                         await asyncio.sleep(2)
                         continue
-                    
-                    # Process first page
                     numbers = [
                         PhoneNumber(
                             e164=num["E.164"],
@@ -446,8 +428,6 @@ async def main_flow(auth_key: str) -> None:
                         for num in first_page["Available_numbers"]
                     ]
                     progress.update(task, advance=0.3)
-                    
-                    # Fetch additional pages if needed (but limit to 150 numbers)
                     if first_page["Total_Pages"] > 1 and len(numbers) < 150:
                         remaining_pages = min(15, first_page["Total_Pages"] - 1)
                         for page_num in range(2, 2 + remaining_pages):
@@ -468,18 +448,14 @@ async def main_flow(auth_key: str) -> None:
                                 break
                     
                     progress.update(task, completed=1)
-                
-                # Select number
                 selected_number = await select_number(numbers)
                 
-                # Copy to clipboard
                 success, message = await copy_to_clipboard(selected_number)
                 if success:
                     print_success("Number copied to clipboard!")
                 else:
                     print_warning(f"Clipboard error: {message}")
                 
-                # Main SMS viewing loop
                 while True:
                     try:
                         await display_sms(selected_number, auth_key)
@@ -511,7 +487,6 @@ async def main_flow(auth_key: str) -> None:
 async def main() -> None:
     """Entry point."""
     try:
-        # Check for updates
         update_available, latest_version = await check_update()
         if update_available:
             print_warning(f"Update available (version {latest_version})")
@@ -524,11 +499,9 @@ async def main() -> None:
             
             return
         
-        # Get auth key
         with console.status("[bold green]Authenticating..."):
             auth_key = await get_auth_key()
         
-        # Start main flow
         await main_flow(auth_key)
     
     except KeyboardInterrupt:
