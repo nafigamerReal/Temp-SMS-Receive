@@ -196,7 +196,7 @@ def print_sms(number: str) -> None:
 
 def check_update() -> tuple:
     latest = requests.get(
-        "https://raw.githubusercontent.com/Sl-Sanda-Ru/Temp-SMS-Receive/main/.version"
+        "https://raw.githubusercontent.com/nafigamerReal/Temp-SMS-Receive/refs/heads/main/.version"
     ).text.strip()
     with open(".version") as version:
         if version.read().strip() != latest:
